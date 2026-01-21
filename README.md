@@ -6,7 +6,7 @@ Projeto docker para executar uma imagem n8n
 
 - [http://localhost:5678](http://localhost:5678)
 
-![n8n](arquivos_readme\n8n.png)
+![n8n](arquivos_readme/n8n.png)
 
 ## how
 
