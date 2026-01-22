@@ -1,0 +1,164 @@
+{
+  "name": "testes_loop",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const items = [];\n\nfor (let i = 1; i <= 100; i++) {\n  items.push({\n    json: {\n      id: i,\n      nome: `item ${i}`,\n      data_criacao: new Date().toISOString()\n    }\n  });\n}\n\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        32
+      ],
+      "id": "7bf53730-f985-482c-b617-4829c65dd00b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst baseDir = '/root/.n8n-files/arquivos/requisitos/testes/';\n\n// Cria o diretório caso ele não exista (recursivo)\nif (!fs.existsSync(baseDir)) {\n  fs.mkdirSync(baseDir, { recursive: true });\n}\n\n// Itera sobre todos os itens que chegam ao nó\nfor (const item of $input.all()) {\n  const fileName = `item_${item.json.id}.json`;\n  const filePath = path.join(baseDir, fileName);\n  \n  // Converte o conteúdo do item para string JSON\n  const content = JSON.stringify(item.json, null, 2);\n  \n  try {\n    fs.writeFileSync(filePath, content);\n    // Adiciona uma confirmação no item para você ver no n8n\n    item.json.status_salvamento = 'sucesso';\n    item.json.caminho_arquivo = filePath;\n  } catch (error) {\n    item.json.status_salvamento = 'erro';\n    item.json.erro_mensagem = error.message;\n  }\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        32
+      ],
+      "id": "0d099223-0b1d-4411-91de-d58f4bb60f0b",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Captura os itens do lote atual (10 itens por vez)\nconst items = $input.all();\nconst agora = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });\n\nreturn items.map((item) => {\n  return {\n    json: {\n      ...item.json,\n      cidade: `Cidade ${item.json.id}`,\n      hora_processamento: agora,\n      lote_status: \"processado\"\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        -32
+      ],
+      "id": "3ec19e54-6c1c-4df8-b2e3-b5936288ad7a",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -448,
+        32
+      ],
+      "id": "3d158360-711f-41d8-adec-2eb07858d3c2",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        32
+      ],
+      "id": "aedefbdb-e57b-4315-9f35-ef66bad6b7af",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "amount": 1
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -64
+      ],
+      "id": "fed1ec0b-da67-4e91-8d2f-1e5a02a3502c",
+      "name": "Wait",
+      "webhookId": "2bc0f5cf-c36a-4e9c-99bb-73d4bb5a6edc"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "f22066b3-7929-49f2-a44a-af55da958b5e",
+  "meta": {
+    "instanceId": "6f502507089b290f59d0ffc445598437f0bf30f732f56b3b56eb421e998dd44c"
+  },
+  "id": "ivW8XS84FzzL7XW8M_7Qq",
+  "tags": []
+}

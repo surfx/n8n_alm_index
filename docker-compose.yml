@@ -2,19 +2,37 @@ version: "3.8"
 
 services:
   n8n:
-    image: docker.n8n.io/n8nio/n8n
+    user: "0:0"
+    image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
+    restart: unless-stopped
     ports:
       - "5678:5678"
     environment:
-      GENERIC_TIMEZONE: America/Fortaleza
-      TZ: America/Fortaleza
-      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
-      N8N_RUNNERS_ENABLED: "true"
+      - N8N_USER_ID=0
+      - N8N_GROUP_ID=0
+      - GENERIC_TIMEZONE=America/Fortaleza
+      - TZ=America/Fortaleza
+      - N8N_BLOCK_FILE_ACCESS_TO_N8N_FILES=false
+      - NODE_FUNCTION_ALLOW_BUILTIN=*
+      - NODE_FUNCTION_ALLOW_EXTERNAL=*
+      # desabilita o login
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - N8N_BLOCK_FS_WRITE_ACCESS=false
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+      # Use esta variável EXATA:
+      - N8N_BLOCK_FS_READ_ACCESS=false
+      - N8N_ALLOWED_BINARY_DATA_PATH=/files
+      #- N8N_ALLOWED_BINARY_DATA_PATH=/files,/home/node/.n8n-files
+      - N8N_DEFAULT_BINARY_DATA_MODE=database
+      - N8N_BINARY_DATA_STORAGE_PATH=/files
     volumes:
       - n8n_data:/home/node/.n8n
-      - ./arquivos_n8n:/files
-    restart: unless-stopped
+      - ./arquivos_n8n:/root/.n8n-files/arquivos
+    # volumes:
+      # - n8n_data:/home/node/.n8n
+      # - ./arquivos_n8n:/files
 
 volumes:
   n8n_data:

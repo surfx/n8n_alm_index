@@ -24,6 +24,14 @@ start.ps1
 
 O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/files`
 
+# Http
+
+- Authorization: Basic MDUzMTIwOTc5MjY6VHJhYmFsaG9yZW1vdG8wMQ==
+
+# Resetar usuário e senha do n8n
+
+`docker exec -it n8n n8n user-management:reset --email "...@gmail.com" --password "...."`
+
 # Urls
 
 - [n8n docs](https://docs.n8n.io/hosting/installation/docker/#prerequisites)
