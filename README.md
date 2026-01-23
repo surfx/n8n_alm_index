@@ -36,6 +36,37 @@ O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/file
 
 Acessar [community-nodes](http://localhost:5678/settings/community-nodes), instale o package `@bitovi/n8n-nodes-markitdown`
 
+# qdrant
+
+Dentro do docker use `qdrant`, no windows use `localhost`
+
+- [http://qdrant:6333](http://qdrant:6333)
+- [http://localhost:6333/collections](http://localhost:6333/collections)
+- [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
+
+Criar índice no qdrant
+
+```bash
+curl -X DELETE "http://qdrant:6333/collections/minha_collection"
+curl -X PUT "http://qdrant:6333/collections/minha_collection" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "vectors": {
+             "size": 768, 
+             "distance": "Cosine"
+           }
+         }'
+```
+
+# Ollama
+
+dentro do docker use `ollama`, no windows use `localhost`
+
+- [http://ollama:11434](http://ollama:11434)
+
+Dentro do docker ollama instale:
+
+`ollama pull nomic-embed-text`
 
 # Urls
 

@@ -31,6 +31,25 @@ RUN apt-get update && apt-get install -y \
     fonts-dejavu \
     fonts-liberation \
     ca-certificates \
+    curl \
+    unzip \
+    tar \
+    bzip2 \
+    libfontconfig1 \
+    libfreetype6 \
+    sudo \
+    locales \
+    ca-certificates \
+    procps \
+    openssh-client \
+    vim \
+    libreadline-dev \
+    libncurses-dev \
+    libssl-dev \
+    tk-dev \
+    libgdbm-dev \
+    libc6-dev \
+    libbz2-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # ===============================
