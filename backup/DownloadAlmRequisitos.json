@@ -3,12 +3,12 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "c14ff902-7637-4a5d-ba37-e81562ad8983",
+      "id": "183301f2-29d1-4bcf-a2c6-c5a169f7fbf1",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        0,
-        328
+        -1344,
+        80
       ],
       "typeVersion": 1
     },
@@ -44,12 +44,12 @@
           }
         }
       },
-      "id": "08cb6e60-b4d8-4aa6-a7be-9d7f8c97baaf",
+      "id": "b0a74d70-71cb-4ad7-9319-9ddd4dcda870",
       "name": "Consultar Areas",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        224,
-        328
+        -1120,
+        80
       ],
       "typeVersion": 4.3
     },
@@ -57,12 +57,12 @@
       "parameters": {
         "jsCode": "const raw = $input.first().json.data;\nconst line = raw.split('\\n').find(l => l.startsWith('data: '));\nconst rpc = JSON.parse(line.replace('data: ', ''));\nconst text = rpc.result.content[0].text;\n\nconst areas = JSON.parse(text);\n\n// nome exato da área\nconst NOME_AREA = 'SINESP-PPE (Gerenciamento de Requisitos)';\n\n// filtra aqui\nconst area = areas.find(a => a.nome === NOME_AREA);\n\n// se não achar, falha explícita\nif (!area) {\n  throw new Error(`Área não encontrada: ${NOME_AREA}`);\n}\n\n// retorna somente a área desejada\nreturn [{ json: area }];\n"
       },
-      "id": "bac71873-38d0-4e53-a6ec-77c50c9018e1",
+      "id": "2baea6b1-3c83-4e10-8128-655a48dc5cb4",
       "name": "Parse Areas SSE",
       "type": "n8n-nodes-base.code",
       "position": [
-        448,
-        328
+        -896,
+        80
       ],
       "typeVersion": 2
     },
@@ -94,12 +94,12 @@
           "response": {}
         }
       },
-      "id": "00b9c6e9-29e6-4418-9c36-e59726383bb8",
+      "id": "15aa0143-b3d9-4ae1-a7b9-f3334d542481",
       "name": "Listar Requisitos",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        672,
-        328
+        -672,
+        80
       ],
       "typeVersion": 4.3
     },
@@ -107,12 +107,12 @@
       "parameters": {
         "jsCode": "const out = [];\n\nfor (const item of $input.all()) {\n  const raw = item.json.data;\n\n  const match = raw.match(/data:\\s*(\\{.*\\})/s);\n  if (!match) continue;\n\n  const rpc = JSON.parse(match[1]);\n  const text = rpc.result.content[0].text;\n  const requisitos = JSON.parse(text);\n\n  for (const r of requisitos) {\n    out.push({ json: r });\n  }\n}\n\nreturn out;\n"
       },
-      "id": "2b508958-4132-4ca9-89da-4b9a51f3b446",
+      "id": "765923e3-177e-4fb2-b770-63f4a96b6682",
       "name": "Parse Requisitos",
       "type": "n8n-nodes-base.code",
       "position": [
-        896,
-        328
+        -448,
+        80
       ],
       "typeVersion": 2
     },
@@ -146,12 +146,12 @@
           }
         }
       },
-      "id": "dd539b22-47f2-4891-a392-6d7db0929de6",
+      "id": "51b66960-adcf-4106-8666-2d2a0e1eedfd",
       "name": "Buscar Artefato",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        1344,
-        256
+        0,
+        0
       ],
       "typeVersion": 4.3
     },
@@ -162,10 +162,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1792,
-        256
+        448,
+        0
       ],
-      "id": "4c7b4940-d16e-4e40-ae42-20ce0889c7d5",
+      "id": "f8eece70-2295-4c71-ba99-152962eaa9c1",
       "name": "tratar artefatos"
     },
     {
@@ -205,23 +205,23 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2016,
-        256
+        672,
+        0
       ],
-      "id": "92cee370-2e72-4225-ba90-9e660e5dd1f3",
+      "id": "65c4d642-cbd2-4d6c-b6f1-abd47c270b59",
       "name": "download artefatos"
     },
     {
       "parameters": {
-        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\n// 1. Definição do local físico no disco\nconst baseDir = '/root/.n8n-files/arquivos/requisitos/raw/';\n\n// 2. Cria a pasta fisicamente se ela não existir\nif (!fs.existsSync(baseDir)) {\n    fs.mkdirSync(baseDir, { recursive: true });\n}\n\nreturn $input.all().map(item => {\n    const rawData = item.json.data;\n    \n    try {\n        // --- PARTE 1: EXTRAÇÃO DOS DADOS ---\n        const jsonMatch = rawData.match(/data:\\s*({.*})/s);\n        if (!jsonMatch) return { json: { skip: true, motivo: \"Regex falhou\" } };\n\n        const parsed = JSON.parse(jsonMatch[1].trim());\n        const artefato = parsed.result.structuredContent.result;\n\n        if (typeof artefato === 'string' || !artefato) {\n            return { json: { skip: true, motivo: \"Artefato vazio ou inválido\" } };\n        }\n\n        // --- PARTE 2: DEFINIÇÃO DE CONTEÚDO E TIPO ---\n        const isBinary = !!artefato.conteudo_base64;\n        const conteudoParaGravar = isBinary ? artefato.conteudo_base64 : (artefato.conteudo || \"\");\n        \n        // --- PARTE 3: TRATAMENTO DO NOME E EXTENSÃO INTELIGENTE ---\n        const tituloOriginal = artefato.titulo || 'arquivo';\n        let tituloLimpo = tituloOriginal.replace(/[^a-z0-9.]/gi, '_').toLowerCase();\n        \n        let fileName = `${artefato.id}_${tituloLimpo}`;\n\n        if (isBinary) {\n            // Se for binário e NÃO tiver extensão no nome, vamos descobrir qual é\n            const temExtensao = fileName.includes('.');\n            \n            if (!temExtensao) {\n                if (conteudoParaGravar.startsWith('UEsDBB')) fileName += '.zip'; // ZIP ou Office (XLSX, DOCX)\n                else if (conteudoParaGravar.startsWith('iVBORw0KGgo')) fileName += '.png';\n                else if (conteudoParaGravar.startsWith('/9j/')) fileName += '.jpg';\n                else if (conteudoParaGravar.startsWith('JVBERi0')) fileName += '.pdf';\n                else fileName += '.bin'; // Fallback para outros binários\n            }\n        } else {\n            // Se for texto (Markdown) e não tiver a extensão, adiciona .md\n            if (!fileName.endsWith('.md')) {\n                fileName += '.md';\n            }\n        }\n        \n        const fullPath = path.join(baseDir, fileName);\n\n        // --- PARTE 4: GRAVAÇÃO NO DISCO ---\n        if (isBinary) {\n            // Converte Base64 para Buffer\n            fs.writeFileSync(fullPath, Buffer.from(conteudoParaGravar, 'base64'));\n        } else {\n            // Grava texto puro em UTF-8\n            fs.writeFileSync(fullPath, conteudoParaGravar, 'utf8');\n        }\n\n        return {\n            json: {\n                status: \"Sucesso\",\n                arquivo: fileName,\n                caminho: fullPath,\n                tipo: isBinary ? \"Binário\" : \"Texto\"\n            }\n        };\n\n    } catch (e) {\n        return { \n            json: { \n                erro: true, \n                detalhe: e.message,\n                item_id: item.json.identifier || \"desconhecido\"\n            } \n        };\n    }\n});"
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\n// 1. Definição do local físico no disco\nconst baseDir = '/home/node/.n8n-files/requisitos/raw/';\n\n// 2. Cria a pasta fisicamente se ela não existir\nif (!fs.existsSync(baseDir)) {\n    fs.mkdirSync(baseDir, { recursive: true });\n}\n\nreturn $input.all().map(item => {\n    const rawData = item.json.data;\n    \n    try {\n        // --- PARTE 1: EXTRAÇÃO DOS DADOS ---\n        const jsonMatch = rawData.match(/data:\\s*({.*})/s);\n        if (!jsonMatch) return { json: { skip: true, motivo: \"Regex falhou\" } };\n\n        const parsed = JSON.parse(jsonMatch[1].trim());\n        const artefato = parsed.result.structuredContent.result;\n\n        if (typeof artefato === 'string' || !artefato) {\n            return { json: { skip: true, motivo: \"Artefato vazio ou inválido\" } };\n        }\n\n        // --- PARTE 2: DEFINIÇÃO DE CONTEÚDO E TIPO ---\n        const isBinary = !!artefato.conteudo_base64;\n        const conteudoParaGravar = isBinary ? artefato.conteudo_base64 : (artefato.conteudo || \"\");\n        \n        // --- PARTE 3: TRATAMENTO DO NOME E EXTENSÃO INTELIGENTE ---\n        const tituloOriginal = artefato.titulo || 'arquivo';\n        let tituloLimpo = tituloOriginal.replace(/[^a-z0-9.]/gi, '_').toLowerCase();\n        \n        let fileName = `${artefato.id}_${tituloLimpo}`;\n\n        if (isBinary) {\n            // Se for binário e NÃO tiver extensão no nome, vamos descobrir qual é\n            const temExtensao = fileName.includes('.');\n            \n            if (!temExtensao) {\n                if (conteudoParaGravar.startsWith('UEsDBB')) fileName += '.zip'; // ZIP ou Office (XLSX, DOCX)\n                else if (conteudoParaGravar.startsWith('iVBORw0KGgo')) fileName += '.png';\n                else if (conteudoParaGravar.startsWith('/9j/')) fileName += '.jpg';\n                else if (conteudoParaGravar.startsWith('JVBERi0')) fileName += '.pdf';\n                else fileName += '.bin'; // Fallback para outros binários\n            }\n        } else {\n            // Se for texto (Markdown) e não tiver a extensão, adiciona .md\n            if (!fileName.endsWith('.md')) {\n                fileName += '.md';\n            }\n        }\n        \n        const fullPath = path.join(baseDir, fileName);\n\n        // --- PARTE 4: GRAVAÇÃO NO DISCO ---\n        if (isBinary) {\n            // Converte Base64 para Buffer\n            fs.writeFileSync(fullPath, Buffer.from(conteudoParaGravar, 'base64'));\n        } else {\n            // Grava texto puro em UTF-8\n            fs.writeFileSync(fullPath, conteudoParaGravar, 'utf8');\n        }\n\n        return {\n            json: {\n                status: \"Sucesso\",\n                arquivo: fileName,\n                caminho: fullPath,\n                tipo: isBinary ? \"Binário\" : \"Texto\"\n            }\n        };\n\n    } catch (e) {\n        return { \n            json: { \n                erro: true, \n                detalhe: e.message,\n                item_id: item.json.identifier || \"desconhecido\"\n            } \n        };\n    }\n});"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2240,
-        328
+        896,
+        80
       ],
-      "id": "e2888142-1fc7-43fa-8474-b59900e376a1",
+      "id": "9f3578e0-a189-40a8-a9ae-4d9ede100522",
       "name": "Salvar artefatos"
     },
     {
@@ -234,10 +234,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        1120,
-        328
+        -224,
+        80
       ],
-      "id": "2e480b6c-e368-4943-9053-83a8a9451752",
+      "id": "923a6b60-099f-48a7-87d6-5faaf1f21b9e",
       "name": "Loop Over Items1"
     },
     {
@@ -247,10 +247,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1568,
-        256
+        224,
+        0
       ],
-      "id": "f1f9775c-42e4-44f8-b871-5e9862d17703",
+      "id": "24f4f9de-392e-48f9-b31e-5da66184e2a0",
       "name": "Wait1",
       "webhookId": "2bc0f5cf-c36a-4e9c-99bb-73d4bb5a6edc"
     }
@@ -409,10 +409,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "0fd4a7eb-86d7-4474-a10f-52a2b1c2cab7",
+  "versionId": "53db282b-114e-443b-b08a-865922dc086b",
   "meta": {
-    "instanceId": "6f502507089b290f59d0ffc445598437f0bf30f732f56b3b56eb421e998dd44c"
+    "instanceId": "1f0ad9069911a95e4caa8f69b9d2353af307adfce9d34cb3dadbd6a9f70ffa0c"
   },
-  "id": "OhWGW2GjNuUwT9-uZITB9",
+  "id": "Dy2zX5GWzeN-FKZxqzdOy",
   "tags": []
 }

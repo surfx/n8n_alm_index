@@ -7,23 +7,23 @@
       "typeVersion": 1,
       "position": [
         0,
-        208
+        0
       ],
-      "id": "7ecfdccd-3d98-426d-b4e7-4d3dbfcbb07c",
+      "id": "ebafec7c-60ac-4034-991b-401b4513997a",
       "name": "When clicking ‘Execute workflow’"
     },
     {
       "parameters": {
-        "fileSelector": "/root/.n8n-files/arquivos/requisitos/raw/*.doc",
+        "fileSelector": "/home/node/.n8n-files/requisitos/raw/*.doc",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        224,
-        208
+        880,
+        160
       ],
-      "id": "e17a525b-d6cf-4ecd-bf0a-d8c73650213c",
+      "id": "2e0de783-c355-4dcc-b1da-f109198ce72d",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -33,10 +33,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        656,
-        208
+        1312,
+        160
       ],
-      "id": "d704a020-40b6-4645-9b76-6f289d27d140",
+      "id": "6692c892-e762-4df6-8244-292e373d773a",
       "name": "Loop Over Items"
     },
     {
@@ -44,10 +44,10 @@
       "type": "@bitovi/n8n-nodes-markitdown.markitdown",
       "typeVersion": 1,
       "position": [
-        928,
-        224
+        1584,
+        176
       ],
-      "id": "03f7494a-caf7-4195-9a4d-4e819e81cd7a",
+      "id": "710bfded-3667-4603-a497-9df83b3c6137",
       "name": "Markitdown"
     },
     {
@@ -57,11 +57,25 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        448,
-        208
+        1104,
+        160
       ],
-      "id": "27098598-a803-4a80-971c-80ad83c70e2d",
+      "id": "8746f1d2-e708-43ca-83e9-2f7662783069",
       "name": "Limit"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/.n8n-files/requisitos/raw/*.*",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "eb593343-8923-444f-93d9-69641ce07553",
+      "name": "Read/Write Files from Disk1"
     }
   ],
   "pinData": {},
@@ -70,7 +84,7 @@
       "main": [
         [
           {
-            "node": "Read/Write Files from Disk",
+            "node": "Read/Write Files from Disk1",
             "type": "main",
             "index": 0
           }
@@ -128,10 +142,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "23054016-2478-4483-90ee-16c06f363021",
+  "versionId": "24e4583a-5a00-4723-a4d0-cb00e88cd63a",
   "meta": {
-    "instanceId": "5a556471483599d890cd49b3f37ddde9825fc0fc053a5a06915b6044778c6b0f"
+    "instanceId": "1f0ad9069911a95e4caa8f69b9d2353af307adfce9d34cb3dadbd6a9f70ffa0c"
   },
-  "id": "c_EryZRmD6yhbDrpdl4XF",
+  "id": "1KLVKjkE3-YYl3Tb0xzhT",
   "tags": []
 }

@@ -20,14 +20,13 @@ services:
       - N8N_BLOCK_FS_WRITE_ACCESS=false
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
       - N8N_BLOCK_FS_READ_ACCESS=false
-      - N8N_ALLOWED_BINARY_DATA_PATH=/files
-      # - N8N_ALLOWED_BINARY_DATA_PATH=/files,/home/node/.n8n-files
+      - N8N_ALLOWED_BINARY_DATA_PATH=/files,/home/node/.n8n-files
       # - N8N_DEFAULT_BINARY_DATA_MODE=database
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
       - N8N_COMMUNITY_PACKAGES_ENABLED=true
     volumes:
       - n8n_data:/home/node/.n8n
-      - ./arquivos_n8n:/root/.n8n-files/arquivos
+      - ./arquivos_n8n:/home/node/.n8n-files
 
 volumes:
   n8n_data:

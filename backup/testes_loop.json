@@ -8,23 +8,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
-        32
+        -464,
+        72
       ],
-      "id": "7bf53730-f985-482c-b617-4829c65dd00b",
+      "id": "7a8bb3ba-6b40-40ca-8c5e-4e0dd3415eb0",
       "name": "Code in JavaScript"
     },
     {
       "parameters": {
-        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst baseDir = '/root/.n8n-files/arquivos/requisitos/testes/';\n\n// Cria o diretório caso ele não exista (recursivo)\nif (!fs.existsSync(baseDir)) {\n  fs.mkdirSync(baseDir, { recursive: true });\n}\n\n// Itera sobre todos os itens que chegam ao nó\nfor (const item of $input.all()) {\n  const fileName = `item_${item.json.id}.json`;\n  const filePath = path.join(baseDir, fileName);\n  \n  // Converte o conteúdo do item para string JSON\n  const content = JSON.stringify(item.json, null, 2);\n  \n  try {\n    fs.writeFileSync(filePath, content);\n    // Adiciona uma confirmação no item para você ver no n8n\n    item.json.status_salvamento = 'sucesso';\n    item.json.caminho_arquivo = filePath;\n  } catch (error) {\n    item.json.status_salvamento = 'erro';\n    item.json.erro_mensagem = error.message;\n  }\n}\n\nreturn $input.all();"
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst baseDir = '/home/node/.n8n-files/requisitos/testes/';\n\n// Cria o diretório caso ele não exista (recursivo)\nif (!fs.existsSync(baseDir)) {\n  fs.mkdirSync(baseDir, { recursive: true });\n}\n\n// Itera sobre todos os itens que chegam ao nó\nfor (const item of $input.all()) {\n  const fileName = `item_${item.json.id}.json`;\n  const filePath = path.join(baseDir, fileName);\n  \n  // Converte o conteúdo do item para string JSON\n  const content = JSON.stringify(item.json, null, 2);\n  \n  try {\n    fs.writeFileSync(filePath, content);\n    // Adiciona uma confirmação no item para você ver no n8n\n    item.json.status_salvamento = 'sucesso';\n    item.json.caminho_arquivo = filePath;\n  } catch (error) {\n    item.json.status_salvamento = 'erro';\n    item.json.erro_mensagem = error.message;\n  }\n}\n\nreturn $input.all();"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        32
+        432,
+        72
       ],
-      "id": "0d099223-0b1d-4411-91de-d58f4bb60f0b",
+      "id": "6510d0b8-9644-4574-a281-2e48a3902932",
       "name": "Code in JavaScript1"
     },
     {
@@ -34,10 +34,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -48,
-        -32
+        208,
+        0
       ],
-      "id": "3ec19e54-6c1c-4df8-b2e3-b5936288ad7a",
+      "id": "9ad373c8-1a68-42a0-b82f-908b5da9a338",
       "name": "Code in JavaScript2"
     },
     {
@@ -48,10 +48,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -448,
-        32
+        -240,
+        72
       ],
-      "id": "3d158360-711f-41d8-adec-2eb07858d3c2",
+      "id": "1b8d9016-46fa-44d4-a28b-5b23487c294a",
       "name": "Loop Over Items"
     },
     {
@@ -59,10 +59,10 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -928,
-        32
+        -688,
+        72
       ],
-      "id": "aedefbdb-e57b-4315-9f35-ef66bad6b7af",
+      "id": "ca48b402-7b53-45de-acb0-fcf7291cf1c5",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -72,10 +72,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -240,
-        -64
+        -16,
+        0
       ],
-      "id": "fed1ec0b-da67-4e91-8d2f-1e5a02a3502c",
+      "id": "1f013ce6-f45a-4df2-a3ca-2d587f629c95",
       "name": "Wait",
       "webhookId": "2bc0f5cf-c36a-4e9c-99bb-73d4bb5a6edc"
     }
@@ -155,10 +155,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "f22066b3-7929-49f2-a44a-af55da958b5e",
+  "versionId": "6355f4d9-b643-42c7-a7ef-f878faad3fdc",
   "meta": {
-    "instanceId": "6f502507089b290f59d0ffc445598437f0bf30f732f56b3b56eb421e998dd44c"
+    "instanceId": "1f0ad9069911a95e4caa8f69b9d2353af307adfce9d34cb3dadbd6a9f70ffa0c"
   },
-  "id": "ivW8XS84FzzL7XW8M_7Qq",
+  "id": "l8fDpenSpn1F3lRLN97Lu",
   "tags": []
 }
