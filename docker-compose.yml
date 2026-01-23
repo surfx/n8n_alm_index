@@ -1,11 +1,21 @@
 version: "3.8"
 
 services:
+  fix-permissions:
+    image: node:20-bookworm-slim
+    entrypoint: ["bash", "-c", "chown -R 1000:1000 /home/node/.n8n"]
+    volumes:
+      - n8n_data:/home/node/.n8n
+    restart: "no"
+
   n8n:
     build: .
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
     restart: no
+    depends_on:
+      fix-permissions:
+        condition: service_completed_successfully
     ports:
       - "5678:5678"
     environment:
@@ -15,7 +25,8 @@ services:
       - NODE_FUNCTION_ALLOW_BUILTIN=*
       - NODE_FUNCTION_ALLOW_EXTERNAL=*
       # desabilita o login
-      - N8N_USER_MANAGEMENT_DISABLED=true
+      # - N8N_USER_MANAGEMENT_DISABLED=true
+      - N8N_USER_MANAGEMENT_DISABLED=false
       - NODE_OPTIONS=--max-old-space-size=4096
       - N8N_BLOCK_FS_WRITE_ACCESS=false
       - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
@@ -24,6 +35,9 @@ services:
       # - N8N_DEFAULT_BINARY_DATA_MODE=database
       - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
       - N8N_COMMUNITY_PACKAGES_ENABLED=true
+      - N8N_ENABLE_EXECUTE_COMMAND=true
+      - N8N_RUNNERS_ENABLED=false
+      - NODES_EXCLUDE=
     volumes:
       - n8n_data:/home/node/.n8n
       - ./arquivos_n8n:/home/node/.n8n-files

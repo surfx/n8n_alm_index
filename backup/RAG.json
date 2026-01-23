@@ -9,7 +9,7 @@
         0,
         0
       ],
-      "id": "ebafec7c-60ac-4034-991b-401b4513997a",
+      "id": "7c3ba1e0-db3b-4167-83c9-b4fb078af209",
       "name": "When clicking ‘Execute workflow’"
     },
     {
@@ -23,7 +23,7 @@
         880,
         160
       ],
-      "id": "2e0de783-c355-4dcc-b1da-f109198ce72d",
+      "id": "6a10abd0-1d63-4f95-bdf8-e7a699578507",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -36,7 +36,7 @@
         1312,
         160
       ],
-      "id": "6692c892-e762-4df6-8244-292e373d773a",
+      "id": "e9127094-846a-4329-bfd1-987f7015ba0b",
       "name": "Loop Over Items"
     },
     {
@@ -47,7 +47,7 @@
         1584,
         176
       ],
-      "id": "710bfded-3667-4603-a497-9df83b3c6137",
+      "id": "8efaa0b2-1639-43fd-afc0-4c55d551d04f",
       "name": "Markitdown"
     },
     {
@@ -60,12 +60,12 @@
         1104,
         160
       ],
-      "id": "8746f1d2-e708-43ca-83e9-2f7662783069",
+      "id": "2dfb31db-1656-4efe-a485-69e3440afc54",
       "name": "Limit"
     },
     {
       "parameters": {
-        "fileSelector": "/home/node/.n8n-files/requisitos/raw/*.*",
+        "fileSelector": "/home/node/.n8n-files/requisitos/raw/*.doc",
         "options": {}
       },
       "type": "n8n-nodes-base.readWriteFile",
@@ -74,7 +74,7 @@
         240,
         0
       ],
-      "id": "eb593343-8923-444f-93d9-69641ce07553",
+      "id": "d020297c-3764-4060-8509-d445815ae9b3",
       "name": "Read/Write Files from Disk1"
     }
   ],
@@ -142,10 +142,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "24e4583a-5a00-4723-a4d0-cb00e88cd63a",
+  "versionId": "0423a95a-57a0-4833-9c27-4397f9be7bef",
   "meta": {
-    "instanceId": "1f0ad9069911a95e4caa8f69b9d2353af307adfce9d34cb3dadbd6a9f70ffa0c"
+    "instanceId": "c9ddd1afcf6936194a76b8db50c3dd540fcb28f9cedfa3344b0bc71a569cf978"
   },
-  "id": "1KLVKjkE3-YYl3Tb0xzhT",
+  "id": "1V8hjf6rpl0JJ430I_Dpm",
   "tags": []
 }

@@ -1,4 +1,4 @@
-Set-Location "D:\projetos\ia\n8n"
+Set-Location "D:\projetos\ia\n8n\scripts"
 
 $VOLUME_NAME = "n8n_data"
 $BACKUP_DIR = "D:\backup\docker\n8n"

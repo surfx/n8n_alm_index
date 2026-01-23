@@ -1,15 +1,12 @@
-Set-Location "D:\projetos\ia\n8n"
+Set-Location "D:\projetos\ia\n8n\scripts"
 
 $VOLUME_NAME = "n8n_data"
 $BACKUP_DIR  = "D:\backup\docker\n8n"
 $BACKUP_FILE = "$BACKUP_DIR\n8n_data.tar"
 
-# Garante que o diretório de backup existe
 if (-not (Test-Path $BACKUP_DIR)) {
     New-Item -ItemType Directory -Path $BACKUP_DIR | Out-Null
 }
-
-docker-compose down 2>$null
 
 Write-Host ""
 Write-Host "Selecione:"
@@ -24,16 +21,15 @@ switch ($OPCAO) {
     "1" {
         Write-Host "💾 Realizando backup do volume..."
 
-        # Verifica se o volume existe
         docker volume inspect $VOLUME_NAME > $null 2>&1
         if ($LASTEXITCODE -ne 0) {
             Write-Host "❌ Volume '$VOLUME_NAME' não existe. Abortando." -ForegroundColor Red
             exit 1
         }
 
-        # Remove backup antigo se existir
+        docker-compose stop
+
         if (Test-Path $BACKUP_FILE) {
-            Write-Host "♻️ Removendo backup antigo..."
             Remove-Item $BACKUP_FILE -Force
         }
 
@@ -43,6 +39,8 @@ switch ($OPCAO) {
           busybox `
           sh -c "cd /volume && tar cf /backup/n8n_data.tar ."
 
+        docker-compose start
+
         Write-Host "✅ Backup concluído com sucesso!"
     }
 
@@ -50,30 +48,24 @@ switch ($OPCAO) {
         Write-Host "📥 Restaurando backup do volume..."
 
         if (-not (Test-Path $BACKUP_FILE)) {
-            Write-Host "❌ Backup não encontrado em $BACKUP_FILE" -ForegroundColor Red
+            Write-Host "❌ Backup não encontrado" -ForegroundColor Red
             exit 1
         }
 
-        # Remove volume antigo se existir
-        docker volume inspect $VOLUME_NAME > $null 2>&1
-        if ($LASTEXITCODE -eq 0) {
-            Write-Host "♻️ Removendo volume antigo..."
-            docker volume rm $VOLUME_NAME | Out-Null
-        }
-
-        docker volume create $VOLUME_NAME | Out-Null
+        docker-compose stop
 
         docker run --rm `
           -v ${VOLUME_NAME}:/volume `
           -v ${BACKUP_DIR}:/backup `
           busybox `
-          sh -c "cd /volume && tar xf /backup/n8n_data.tar"
+          sh -c "rm -rf /volume/* && tar xf /backup/n8n_data.tar -C /volume && chown -R 1000:1000 /volume"
+
+        docker-compose start
 
         Write-Host "✅ Backup restaurado com sucesso!"
     }
 
     default {
-        Write-Host "❌ Opção inválida. Execute o script novamente." -ForegroundColor Red
-        exit 1
+        Write-Host "❌ Opção inválida"
     }
 }
