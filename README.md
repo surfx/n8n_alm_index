@@ -1,32 +1,34 @@
 # Sobre
 
-Projeto docker para executar uma imagem n8n
+Projeto docker que executa o n8n, ollama e qdrant
 
 # Acesso
 
 - [http://localhost:5678](http://localhost:5678)
-
-![n8n](arquivos_readme/n8n.png)
 
 ## how
 
 Para buildar o docker do zero
 
 ```ps
-try_all.ps1
+scripts/try_all.ps1
 ```
 
 Para iniciar
 
 ```ps
-start.ps1
+scripts/start.ps1
 ```
 
 O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/files`
 
 # Http
 
-- Authorization: Basic MDUzMTIwOTc5MjY6VHJhYmFsaG9yZW1vdG8wMQ==
+- `Authorization: Basic M...==`
+
+# n8n
+
+ferramenta de automação de fluxo de trabalho de código aberto e low-code
 
 # Resetar usuário e senha do n8n
 
@@ -35,6 +37,32 @@ O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/file
 # Configurações n8n
 
 Acessar [community-nodes](http://localhost:5678/settings/community-nodes), instale o package `@bitovi/n8n-nodes-markitdown`
+
+# Fluxos
+
+## 1 Download Alm Requisitos
+
+Responmsável por fazer o download de todos os requisitos de uma área de projeto do ibm alm e salvar em uma pasta
+
+![](arquivos_readme/001.png)
+
+## 2 To md
+
+Converte os diversos arquivos para o formato markdown (md)
+
+![](arquivos_readme/002.png)
+
+## 3 Rag qdrant
+
+Indexa da na base qdrant os arquivos convertidos (md)
+
+![](arquivos_readme/003.png)
+
+## 4 Chat
+
+Consulta via chat aos requisitos indexados no qdrant
+
+![](arquivos_readme/004.png)
 
 # qdrant
 
@@ -64,9 +92,18 @@ dentro do docker use `ollama`, no windows use `localhost`
 
 - [http://ollama:11434](http://ollama:11434)
 
+Para acessar o docker do ollama
+
+```ps
+start_ollama.ps1
+```
+
 Dentro do docker ollama instale:
 
-`ollama pull nomic-embed-text`
+```bash
+ollama pull nomic-embed-text
+ollama pull llama4
+```
 
 # Urls
 
