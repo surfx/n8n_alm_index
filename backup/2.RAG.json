@@ -1,0 +1,415 @@
+{
+  "name": "2.RAG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        192
+      ],
+      "id": "7c3ba1e0-db3b-4167-83c9-b4fb078af209",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/home/node/.n8n-files/requisitos/raw/*.*",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        192
+      ],
+      "id": "d020297c-3764-4060-8509-d445815ae9b3",
+      "name": "Read/Write Files from Disk1"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "docx|xlsx|xls|xlx|pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "01ace220-a308-4bc8-a67e-b3db4f7e8e26"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "docx|xlsx|xls|xlx|pdf"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "59d1803f-5eba-460b-96a6-880283d6de62",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "doc",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "doc"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "30828dc0-4b06-4d70-a6fc-f193b74cd5ca",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "png|jpe?g|gif|webp|bmp|tiff",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "imagens"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "657c982f-15eb-4a31-9431-9f09e1c4b04f",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "md|txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "23a2afdf-b8d0-4f7d-9641-e32963f8a54f",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "z",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ZIP"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -32
+      ],
+      "id": "0823f578-1d6c-4dc9-9f08-237cd151d4e6",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=markitdown \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" -o \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -272
+      ],
+      "id": "873c70f0-179d-4b70-9479-a61cd363006b",
+      "name": "Markitdown",
+      "executeOnce": false
+    },
+    {
+      "parameters": {
+        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && antiword \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" | iconv -f ISO-8859-1 -t UTF-8//TRANSLIT > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        -80
+      ],
+      "id": "4c15919e-6bb8-4bad-922d-a3117f4ec994",
+      "name": "antiword"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=tesseract \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" stdout -l por > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        112
+      ],
+      "id": "5452a318-5287-4fb3-b5bf-6263d38aa61c",
+      "name": "imagens"
+    },
+    {
+      "parameters": {
+        "executeOnce": false,
+        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName }}\""
+      },
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        304
+      ],
+      "id": "3514bf9e-f4e3-43b7-8387-07475fd50c78",
+      "name": "Text"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        96
+      ],
+      "id": "395d0e41-1652-4e6c-a89b-0b7ffacf5249",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "batchSize": 20,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        448,
+        192
+      ],
+      "id": "e4a3d055-e8ac-4dc7-bf22-e93ad9760b57",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {
+        "amount": 0.3
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        16
+      ],
+      "id": "79e09eee-f5cf-46ec-abe6-aa4afcdd05d8",
+      "name": "Wait",
+      "webhookId": "0dd7d0ce-8476-4f5b-8dbd-233a7070074f"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Markitdown",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "antiword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "imagens",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Markitdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markitdown": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "antiword": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "imagens": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No Operation, do nothing": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "443db440-7a76-47ed-9b9a-931eac885ad6",
+  "meta": {
+    "instanceId": "c9ddd1afcf6936194a76b8db50c3dd540fcb28f9cedfa3344b0bc71a569cf978"
+  },
+  "id": "1V8hjf6rpl0JJ430I_Dpm",
+  "tags": []
+}

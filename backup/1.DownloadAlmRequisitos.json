@@ -1,9 +1,9 @@
 {
-  "name": "DownloadAlmRequisitos",
+  "name": "1.DownloadAlmRequisitos",
   "nodes": [
     {
       "parameters": {},
-      "id": "183301f2-29d1-4bcf-a2c6-c5a169f7fbf1",
+      "id": "af057671-9c8c-4fd0-b4aa-9459a986b27f",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
@@ -44,7 +44,7 @@
           }
         }
       },
-      "id": "b0a74d70-71cb-4ad7-9319-9ddd4dcda870",
+      "id": "b1a943df-a667-46dc-ba8e-19f0f763e9fc",
       "name": "Consultar Areas",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
@@ -57,7 +57,7 @@
       "parameters": {
         "jsCode": "const raw = $input.first().json.data;\nconst line = raw.split('\\n').find(l => l.startsWith('data: '));\nconst rpc = JSON.parse(line.replace('data: ', ''));\nconst text = rpc.result.content[0].text;\n\nconst areas = JSON.parse(text);\n\n// nome exato da área\nconst NOME_AREA = 'SINESP-PPE (Gerenciamento de Requisitos)';\n\n// filtra aqui\nconst area = areas.find(a => a.nome === NOME_AREA);\n\n// se não achar, falha explícita\nif (!area) {\n  throw new Error(`Área não encontrada: ${NOME_AREA}`);\n}\n\n// retorna somente a área desejada\nreturn [{ json: area }];\n"
       },
-      "id": "2baea6b1-3c83-4e10-8128-655a48dc5cb4",
+      "id": "ff6594d2-aeb7-4a44-8df3-38b6eeb867a8",
       "name": "Parse Areas SSE",
       "type": "n8n-nodes-base.code",
       "position": [
@@ -94,7 +94,7 @@
           "response": {}
         }
       },
-      "id": "15aa0143-b3d9-4ae1-a7b9-f3334d542481",
+      "id": "c9d1cf0d-3e91-4d93-9753-3fd0160eb223",
       "name": "Listar Requisitos",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
@@ -107,7 +107,7 @@
       "parameters": {
         "jsCode": "const out = [];\n\nfor (const item of $input.all()) {\n  const raw = item.json.data;\n\n  const match = raw.match(/data:\\s*(\\{.*\\})/s);\n  if (!match) continue;\n\n  const rpc = JSON.parse(match[1]);\n  const text = rpc.result.content[0].text;\n  const requisitos = JSON.parse(text);\n\n  for (const r of requisitos) {\n    out.push({ json: r });\n  }\n}\n\nreturn out;\n"
       },
-      "id": "765923e3-177e-4fb2-b770-63f4a96b6682",
+      "id": "38f0c7ba-b0b6-43ca-aef5-0e25028305f3",
       "name": "Parse Requisitos",
       "type": "n8n-nodes-base.code",
       "position": [
@@ -146,7 +146,7 @@
           }
         }
       },
-      "id": "51b66960-adcf-4106-8666-2d2a0e1eedfd",
+      "id": "8ee350fc-11ec-427f-97f2-be8618dfc040",
       "name": "Buscar Artefato",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
@@ -165,7 +165,7 @@
         448,
         0
       ],
-      "id": "f8eece70-2295-4c71-ba99-152962eaa9c1",
+      "id": "8dce1c22-b0e1-4ef8-ac3d-43ca3bf75dfc",
       "name": "tratar artefatos"
     },
     {
@@ -208,7 +208,7 @@
         672,
         0
       ],
-      "id": "65c4d642-cbd2-4d6c-b6f1-abd47c270b59",
+      "id": "92d08cb8-d46c-45fc-ba31-ad633e58d36c",
       "name": "download artefatos"
     },
     {
@@ -221,7 +221,7 @@
         896,
         80
       ],
-      "id": "9f3578e0-a189-40a8-a9ae-4d9ede100522",
+      "id": "fde4bc2f-6fb0-47f7-be77-53c9fd5e2877",
       "name": "Salvar artefatos"
     },
     {
@@ -237,7 +237,7 @@
         -224,
         80
       ],
-      "id": "923a6b60-099f-48a7-87d6-5faaf1f21b9e",
+      "id": "81fab673-308d-4add-98d9-9b5d17f657d8",
       "name": "Loop Over Items1"
     },
     {
@@ -250,7 +250,7 @@
         224,
         0
       ],
-      "id": "24f4f9de-392e-48f9-b31e-5da66184e2a0",
+      "id": "fa1fda72-f6dd-4f1f-9671-47a2421b835a",
       "name": "Wait1",
       "webhookId": "2bc0f5cf-c36a-4e9c-99bb-73d4bb5a6edc"
     }
@@ -409,10 +409,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "53db282b-114e-443b-b08a-865922dc086b",
+  "versionId": "7b789799-dedb-45e3-afe0-6fe213cbccc7",
   "meta": {
-    "instanceId": "1f0ad9069911a95e4caa8f69b9d2353af307adfce9d34cb3dadbd6a9f70ffa0c"
+    "instanceId": "c9ddd1afcf6936194a76b8db50c3dd540fcb28f9cedfa3344b0bc71a569cf978"
   },
-  "id": "Dy2zX5GWzeN-FKZxqzdOy",
+  "id": "nyVylkrQWt8Q44Xf_RF_p",
   "tags": []
 }
