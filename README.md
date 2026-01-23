@@ -32,7 +32,13 @@ O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/file
 
 `docker exec -it n8n n8n user-management:reset --email "...@gmail.com" --password "...."`
 
+# Configurações n8n
+
+Acessar [community-nodes](http://localhost:5678/settings/community-nodes), instale o package `@bitovi/n8n-nodes-markitdown`
+
+
 # Urls
 
 - [n8n docs](https://docs.n8n.io/hosting/installation/docker/#prerequisites)
 - [n8n.io](https://n8n.io/)
+- [markitdown](https://github.com/microsoft/markitdown)

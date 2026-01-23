@@ -1,0 +1,137 @@
+{
+  "name": "RAG",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "7ecfdccd-3d98-426d-b4e7-4d3dbfcbb07c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/root/.n8n-files/arquivos/requisitos/raw/*.doc",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        208
+      ],
+      "id": "e17a525b-d6cf-4ecd-bf0a-d8c73650213c",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        656,
+        208
+      ],
+      "id": "d704a020-40b6-4645-9b76-6f289d27d140",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "@bitovi/n8n-nodes-markitdown.markitdown",
+      "typeVersion": 1,
+      "position": [
+        928,
+        224
+      ],
+      "id": "03f7494a-caf7-4195-9a4d-4e819e81cd7a",
+      "name": "Markitdown"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        208
+      ],
+      "id": "27098598-a803-4a80-971c-80ad83c70e2d",
+      "name": "Limit"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Markitdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markitdown": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "23054016-2478-4483-90ee-16c06f363021",
+  "meta": {
+    "instanceId": "5a556471483599d890cd49b3f37ddde9825fc0fc053a5a06915b6044778c6b0f"
+  },
+  "id": "c_EryZRmD6yhbDrpdl4XF",
+  "tags": []
+}
