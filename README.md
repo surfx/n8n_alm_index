@@ -22,6 +22,12 @@ scripts/start.ps1
 
 O volume local aponta para a pasta `arquivos_n8n`, no docker mapeado para `/files`
 
+## Uso GPU
+
+No docker: `Settings > Resources > WSL Integration` e garanta que sua distro esteja ativada
+
+`docker run --rm --gpus all nvidia/cuda:12.6.0-base-ubuntu22.04 nvidia-smi`
+
 # Http
 
 - `Authorization: Basic M...==`
@@ -110,3 +116,4 @@ ollama pull llama3.1
 - [n8n docs](https://docs.n8n.io/hosting/installation/docker/#prerequisites)
 - [n8n.io](https://n8n.io/)
 - [markitdown](https://github.com/microsoft/markitdown)
+- [qdrant](http://localhost:6333/dashboard)

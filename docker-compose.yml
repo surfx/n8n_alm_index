@@ -41,8 +41,17 @@ services:
     depends_on:
       qdrant:
         condition: service_started
+      ollama:
+        condition: service_started
       fix-permissions:
         condition: service_completed_successfully
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
       
   qdrant:
     image: qdrant/qdrant:latest
@@ -52,6 +61,13 @@ services:
       - "6333:6333"
     volumes:
       - ./qdrant_data:/qdrant/storage
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
   ollama:
     image: ollama/ollama:latest
@@ -61,6 +77,13 @@ services:
       - "11434:11434"
     volumes:
       - ./ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
       
 volumes:
   n8n_data:
