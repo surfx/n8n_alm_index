@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Chat Interface</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h1>Assistente IA (n8n + Qdrant + Ollama)</h1>
+            <button id="clear-btn" title="Nova Conversa">Limpar</button>
+        </header>
+        
+        <div id="chat-history" class="chat-history">
+            <div class="message bot-message">
+                <div class="message-content">Olá! Como posso ajudar você hoje?</div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <button id="stop-btn" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect>
+                </svg>
+                Parar
+            </button>
+            <textarea id="chat-input" placeholder="Digite sua mensagem..." rows="1"></textarea>
+            <button id="send-btn" type="button">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

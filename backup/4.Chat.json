@@ -24,7 +24,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -24,
+        -32,
         0
       ],
       "id": "0290a04d-9f6a-4321-9cd7-5220a9f4b8dc",
@@ -72,7 +72,7 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "responda as perguntas",
+        "toolDescription": "Utilize esta ferramenta para buscar informações técnicas sobre especificações de temas e modelos Sinesp. A entrada deve ser o termo de busca ou a dúvida do usuário.",
         "qdrantCollection": {
           "__rl": true,
           "value": "minha_collection",
@@ -167,12 +167,12 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "73a29229-2d62-40ef-9ebb-f9d89597cc79",
+  "versionId": "b2a4efc5-f280-43aa-b809-ae06f6561e95",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"

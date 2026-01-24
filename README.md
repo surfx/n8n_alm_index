@@ -70,6 +70,20 @@ Consulta via chat aos requisitos indexados no qdrant
 
 ![](arquivos_readme/004.png)
 
+![](arquivos_readme/chat.png)
+
+## Curl
+
+```ps
+curl -k -X POST "http://localhost:5678/webhook/e694bea8-397d-4953-835d-734a7893defc/chat" `
+-H 'Content-Type: application/json' `
+--data '{
+  "sessionId": "e4938706c69546a3a7f090139e04a064",
+  "action": "sendMessage",
+  "chatInput": "o que é um boletim de ocorrencia ?"
+}'
+```
+
 # qdrant
 
 Dentro do docker use `qdrant`, no windows use `localhost`
