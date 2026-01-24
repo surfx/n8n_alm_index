@@ -1,7 +1,4 @@
-arquivos_n8n/requisitos/raw/
 req2md.lnk
 scripts/reset_password.ps1
-arquivos_n8n/requisitos/processado/
 backup/n8n_backup.lnk
-ollama_data/
-qdrant_data/
+arquivos_docker/

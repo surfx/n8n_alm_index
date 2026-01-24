@@ -5,7 +5,7 @@ services:
     image: node:20-bookworm-slim
     entrypoint: ["bash", "-c", "chown -R 1000:1000 /home/node/.n8n"]
     volumes:
-      - n8n_data:/home/node/.n8n
+      - ./arquivos_docker/n8n_data:/home/node/.n8n
     restart: "no"
 
   n8n:
@@ -36,8 +36,8 @@ services:
       - N8N_RUNNERS_ENABLED=false
       - NODES_EXCLUDE=
     volumes:
-      - n8n_data:/home/node/.n8n
-      - ./arquivos_n8n:/home/node/.n8n-files
+      - ./arquivos_docker/n8n_data:/home/node/.n8n
+      - ./arquivos_docker/arquivos_n8n:/home/node/.n8n-files
     depends_on:
       qdrant:
         condition: service_started
@@ -60,7 +60,7 @@ services:
     ports:
       - "6333:6333"
     volumes:
-      - ./qdrant_data:/qdrant/storage
+      - ./arquivos_docker/qdrant_data:/qdrant/storage
     deploy:
       resources:
         reservations:
@@ -76,7 +76,7 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ./ollama_data:/root/.ollama
+      - ./arquivos_docker/ollama_data:/root/.ollama
     deploy:
       resources:
         reservations:
@@ -85,6 +85,4 @@ services:
               count: 1
               capabilities: [gpu]
       
-volumes:
-  n8n_data:
-    name: n8n_data
+
