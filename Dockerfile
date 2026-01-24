@@ -50,6 +50,7 @@ RUN apt-get update && apt-get install -y \
     libgdbm-dev \
     libc6-dev \
     libbz2-dev \
+	sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 # ===============================

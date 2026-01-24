@@ -32,7 +32,7 @@
     },
     {
       "parameters": {
-        "model": "llama4:latest",
+        "model": "llama3.1:latest",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
@@ -72,7 +72,7 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "defina BO",
+        "toolDescription": "responda as perguntas",
         "qdrantCollection": {
           "__rl": true,
           "value": "minha_collection",
@@ -172,7 +172,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "9e065a9e-43ce-460c-8630-0042d8513510",
+  "versionId": "c5fa4355-3611-435e-8131-bf4aa849fc72",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"

@@ -102,7 +102,7 @@ Dentro do docker ollama instale:
 
 ```bash
 ollama pull nomic-embed-text
-ollama pull llama4
+ollama pull llama3.1
 ```
 
 # Urls
