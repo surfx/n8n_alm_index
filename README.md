@@ -54,7 +54,7 @@ Converte os diversos arquivos para o formato markdown (md)
 
 ## 3 Rag qdrant
 
-Indexa da na base qdrant os arquivos convertidos (md)
+Indexa na base qdrant os arquivos convertidos (md)
 
 ![](arquivos_readme/003.png)
 
