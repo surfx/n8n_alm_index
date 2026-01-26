@@ -2,17 +2,6 @@
   "name": "3.rag_qdrant",
   "nodes": [
     {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        0,
-        -360
-      ],
-      "id": "d0ebe3cf-3b8b-4329-83cb-5bfb59899238",
-      "name": "When clicking ‘Execute workflow’"
-    },
-    {
       "parameters": {
         "fileSelector": "/home/node/.n8n-files/requisitos/processado/*.*",
         "options": {}
@@ -20,10 +9,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        224,
-        -360
+        -1296,
+        16
       ],
-      "id": "1d5445e6-e96b-43a5-a83f-22649114fbea",
+      "id": "69ef1e03-774b-44b4-9b44-bd16ccc838a9",
       "name": "Read/Write Files from Disk"
     },
     {
@@ -34,10 +23,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        448,
-        -360
+        -1072,
+        16
       ],
-      "id": "dc625b1d-c9ca-4056-8f35-e8ca82e63af4",
+      "id": "79149057-7a81-4035-bb49-8be0ffbc8ce4",
       "name": "Loop Over Items"
     },
     {
@@ -45,19 +34,21 @@
         "mode": "insert",
         "qdrantCollection": {
           "__rl": true,
-          "value": "minha_collection",
+          "value": "collection_rag_alm",
           "mode": "list",
-          "cachedResultName": "minha_collection"
+          "cachedResultName": "collection_rag_alm"
         },
-        "options": {}
+        "options": {
+          "metadataPayloadKey": "=metadata"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
-        896,
-        -360
+        -176,
+        16
       ],
-      "id": "efbe420d-a9ba-46d9-8f4f-4d0fe9bba064",
+      "id": "5961a0cc-3121-4943-a4b8-9454e8d39221",
       "name": "Qdrant Vector Store",
       "credentials": {
         "qdrantApi": {
@@ -73,10 +64,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        904,
-        -136
+        -176,
+        240
       ],
-      "id": "28763343-f5a9-4025-9200-11319b3558f3",
+      "id": "88058ea4-b2bf-4688-bae7-3efb5c1cedec",
       "name": "Embeddings Ollama",
       "credentials": {
         "ollamaApi": {
@@ -88,15 +79,36 @@
     {
       "parameters": {
         "dataType": "binary",
-        "options": {}
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "resource_id",
+                "value": "={{ $json.metadata.resource_id }}"
+              },
+              {
+                "name": "original_url",
+                "value": "={{ $json.metadata.original_url }}"
+              },
+              {
+                "name": "title",
+                "value": "={{ $json.metadata.title }}"
+              },
+              {
+                "name": "filename",
+                "value": "={{ $json.metadata.filename }}"
+              }
+            ]
+          }
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
       "position": [
-        1032,
-        -136
+        -48,
+        240
       ],
-      "id": "a15cc159-e22c-4242-8962-b9a433d7dbd2",
+      "id": "69c8c8f8-9849-4d4f-94ed-39edb0e2db3f",
       "name": "Default Data Loader"
     },
     {
@@ -106,27 +118,73 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        672,
-        -432
+        -848,
+        -64
       ],
-      "id": "1b4b6b0d-f718-4f4a-b315-bd26684d15a2",
+      "id": "f0e72a5a-8d52-4c51-bc95-919cef26a860",
       "name": "Wait",
       "webhookId": "d17d9c30-14bc-415e-b1fb-eac8b9edddcd"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fs = require('fs');\nconst path = require('path');\n\nconst items = $input.all();\n\nreturn items.map(item => {\n    // Só processa se for markdown\n    if (item.json.fileExtension === 'md') {\n        const filePath = '/home/node/.n8n-files/requisitos/processado/' + item.json.fileName;\n        const metaPath = filePath + '.meta.json';\n        \n        if (fs.existsSync(metaPath)) {\n            try {\n                const metaContent = JSON.parse(fs.readFileSync(metaPath, 'utf8'));\n                \n                // O n8n/LangChain usa a chave 'metadata' para preencher o payload\n                item.json.metadata = {\n                    resource_id: metaContent.resource_id,\n                    title: metaContent.title,\n                    original_url: metaContent.original_url,\n                    timestamp: metaContent.timestamp,\n                    filename: item.json.fileName\n                };\n                \n            } catch (e) {\n                console.error('Erro ao ler meta:', e);\n            }\n        }\n    }\n    return item;\n});"
+      },
+      "id": "fcfc82f9-d80c-4b40-9d4c-599b193d53ec",
+      "name": "Enrich Metadata",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        -64
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        16
+      ],
+      "id": "e821dd59-eb82-41ad-b548-0a87fe611d66",
+      "name": "When clicking"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1abb49f6-4c9b-4543-9ce4-44cd746f324f",
+              "leftValue": "={{ $json.fileExtension }}",
+              "rightValue": "md",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -400,
+        -64
+      ],
+      "id": "498a0f20-bb61-43d1-a08f-9dd127a0921a",
+      "name": "Filter md"
     }
   ],
   "pinData": {},
   "connections": {
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "Read/Write Files from Disk",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Read/Write Files from Disk": {
       "main": [
         [
@@ -187,6 +245,39 @@
       "main": [
         [
           {
+            "node": "Enrich Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Metadata": {
+      "main": [
+        [
+          {
+            "node": "Filter md",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter md": {
+      "main": [
+        [
+          {
             "node": "Qdrant Vector Store",
             "type": "main",
             "index": 0
@@ -200,11 +291,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "1bb852cc-5a10-4e4b-851f-32b1e81c3f35",
+  "versionId": "a632dafe-ded2-4093-8ff7-a5212d84cc04",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"
   },
-  "id": "yuEA-1qlZga8kp7vmvPHn",
+  "id": "UGLqzls80AmBkAiD9O7YM",
   "tags": []
 }

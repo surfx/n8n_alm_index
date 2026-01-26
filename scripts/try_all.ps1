@@ -1,6 +1,8 @@
-Set-Location "D:\projetos\ia\n8n\scripts"
+# Define a raiz do projeto baseada na localização deste script
+$PROJECT_ROOT = Resolve-Path "$PSScriptRoot\.."
+Set-Location $PROJECT_ROOT
 
-$VOLUME_PATH = Resolve-Path "..\arquivos_docker\n8n_data"
+$VOLUME_PATH = Resolve-Path ".\arquivos_docker\n8n_data"
 $BACKUP_DIR = "D:\backup\docker\n8n"
 $BACKUP_FILE_VOLUME = "$BACKUP_DIR\n8n_data.tar"
 

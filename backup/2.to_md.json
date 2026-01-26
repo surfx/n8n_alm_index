@@ -6,11 +6,11 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1120,
-        464
+        -1712,
+        2024
       ],
-      "id": "fc61dcbc-4ea1-4829-8d03-5f03b52d7f20",
-      "name": "When clicking ‘Execute workflow’"
+      "id": "524406f3-493c-4172-af85-cb960c4c8ba5",
+      "name": "When clicking â€˜Execute workflowâ€™"
     },
     {
       "parameters": {
@@ -20,10 +20,10 @@
       "type": "n8n-nodes-base.readWriteFile",
       "typeVersion": 1.1,
       "position": [
-        -896,
-        464
+        -1488,
+        2024
       ],
-      "id": "2358f6d6-fc12-43ee-9b8d-85e7177f81be",
+      "id": "948cce24-7e53-4d7f-9df1-366c19a69632",
       "name": "Read/Write Files from Disk1"
     },
     {
@@ -149,74 +149,100 @@
               },
               "renameOutput": true,
               "outputKey": "ZIP"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "12d77977-6db4-44ee-b2b6-be91d4e77802",
+                    "leftValue": "={{ $json.mimeType }}",
+                    "rightValue": "json",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "json"
             }
           ]
         },
-        "options": {}
+        "options": {
+          "fallbackOutput": "extra"
+        }
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -224,
-        240
+        -816,
+        1728
       ],
-      "id": "190926b7-ee58-43f7-ac79-2d33ca3f3463",
+      "id": "9618e733-1792-4ecd-b77c-1c5583dcc9cc",
       "name": "Switch"
     },
     {
       "parameters": {
         "executeOnce": false,
-        "command": "=markitdown \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" -o \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+        "command": "=markitdown \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" -o \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}.meta.json\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md.meta.json\" || true"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -592,
+        1424
       ],
-      "id": "28b1d92d-fc3a-43e1-9524-6b7d0cc2458a",
+      "id": "7048c7cb-a10c-4cfa-84a3-1d570fb2c973",
       "name": "Markitdown",
       "executeOnce": false
     },
     {
       "parameters": {
-        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && antiword \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" | iconv -f ISO-8859-1 -t UTF-8//TRANSLIT > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && antiword \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" | iconv -f ISO-8859-1 -t UTF-8//TRANSLIT > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}.meta.json\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md.meta.json\" || true"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        0,
-        192
+        -592,
+        1616
       ],
-      "id": "59067dd1-1fd8-4c23-9704-5bf6c329caff",
+      "id": "91955d0d-871c-44a4-8ed2-e3cdb24fb5e4",
       "name": "antiword"
     },
     {
       "parameters": {
         "executeOnce": false,
-        "command": "=tesseract \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" stdout -l por > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\""
+        "command": "=tesseract \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" stdout -l por > \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}.meta.json\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName.substring(0, $json.fileName.lastIndexOf('.')) }}.md.meta.json\" || true"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        0,
-        384
+        -592,
+        1808
       ],
-      "id": "4c7dcef8-831b-4223-9ef0-26a1c76ac414",
+      "id": "5ef0b23c-1f50-41f3-a4ae-d65ca4f2c436",
       "name": "imagens"
     },
     {
       "parameters": {
         "executeOnce": false,
-        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName }}\""
+        "command": "=mkdir -p \"/home/node/.n8n-files/requisitos/processado/\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName }}\" && cp \"/home/node/.n8n-files/requisitos/raw/{{ $json.fileName }}.meta.json\" \"/home/node/.n8n-files/requisitos/processado/{{ $json.fileName }}.meta.json\" || true"
       },
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        0,
-        576
+        -592,
+        2096
       ],
-      "id": "e7af508d-f960-4986-8698-64b23ebf54c4",
+      "id": "6d16aba5-50df-4cfc-8322-c762efd9b7c5",
       "name": "Text"
     },
     {
@@ -224,10 +250,10 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        224,
-        368
+        -368,
+        1840
       ],
-      "id": "ef6a25ed-7346-435c-9aaf-b142ad826605",
+      "id": "1985decf-4a95-404f-a420-d5df3311bf44",
       "name": "No Operation, do nothing"
     },
     {
@@ -238,10 +264,10 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -672,
-        464
+        -1264,
+        2024
       ],
-      "id": "fabc2e17-62e1-4676-9844-779d51e5785e",
+      "id": "5b6a53b9-8897-4be3-a1d5-5d164909d6ce",
       "name": "Loop Over Items1"
     },
     {
@@ -251,17 +277,17 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -448,
-        288
+        -1040,
+        1808
       ],
-      "id": "b5085e0e-089d-49ae-b483-787c215e63de",
+      "id": "83f5a130-06e1-4d53-ad6e-ac2bb19b5be9",
       "name": "Wait",
       "webhookId": "0dd7d0ce-8476-4f5b-8dbd-233a7070074f"
     }
   ],
   "pinData": {},
   "connections": {
-    "When clicking ‘Execute workflow’": {
+    "When clicking â€˜Execute workflowâ€™": {
       "main": [
         [
           {
@@ -316,6 +342,13 @@
         [
           {
             "node": "Markitdown",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
             "type": "main",
             "index": 0
           }
@@ -406,10 +439,10 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "543db5ae-5e71-423d-b53a-335f44a61032",
+  "versionId": "a879df5b-8c54-46bc-8210-335801b51db1",
   "meta": {
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"
   },
-  "id": "ip05b2iVRuJdu-As3hjIb",
+  "id": "BSJjRDDdsvxZ4WanIICwo",
   "tags": []
 }

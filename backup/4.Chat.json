@@ -10,24 +10,27 @@
       "type": "@n8n/n8n-nodes-langchain.chatTrigger",
       "typeVersion": 1.4,
       "position": [
-        -304,
-        0
+        1040,
+        2216
       ],
-      "id": "bf5c4e2d-ba49-4682-94eb-b779691d901b",
+      "id": "c4cabf9c-cf68-47a5-973e-6caaab27da2c",
       "name": "When chat message received",
-      "webhookId": "e694bea8-397d-4953-835d-734a7893defc"
+      "webhookId": "e694bea8-397d-4953-835d-734a7893defc",
+      "disabled": true
     },
     {
       "parameters": {
-        "options": {}
+        "options": {
+          "systemMessage": "Você é um assistente técnico especializado no Sinesp. Ao responder perguntas, utilize sempre a ferramenta 'documentos_sinesp'. Para cada parágrafo ou informação importante fornecida, você deve obrigatoriamente citar a fonte no formato: [Fonte: título do documento](URL correspondente). Extraia essas informações dos campos 'title' e 'original_url' presentes nos metadados dos documentos recuperados."
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        -32,
-        0
+        1544,
+        2416
       ],
-      "id": "0290a04d-9f6a-4321-9cd7-5220a9f4b8dc",
+      "id": "77082cf3-caec-42ff-8a6f-c3b9db19582f",
       "name": "AI Agent"
     },
     {
@@ -38,10 +41,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
       "typeVersion": 1,
       "position": [
-        -80,
-        224
+        1488,
+        2640
       ],
-      "id": "a4267881-1351-488e-8e98-fa07822723b8",
+      "id": "a9cd4bc3-d0c4-435c-a599-06ff6e32b9a2",
       "name": "Ollama Chat Model",
       "credentials": {
         "ollamaApi": {
@@ -57,10 +60,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOllama",
       "typeVersion": 1,
       "position": [
-        256,
-        432
+        1824,
+        2848
       ],
-      "id": "fa858e1e-8d24-47c2-b698-c6af57ccf7cb",
+      "id": "7d04d16e-6639-45d0-a778-7b492caf6c90",
       "name": "Embeddings Ollama",
       "credentials": {
         "ollamaApi": {
@@ -72,22 +75,22 @@
     {
       "parameters": {
         "mode": "retrieve-as-tool",
-        "toolDescription": "Utilize esta ferramenta para buscar informações técnicas sobre especificações de temas e modelos Sinesp. A entrada deve ser o termo de busca ou a dúvida do usuário.",
+        "toolDescription": "Utilize esta ferramenta para buscar informações técnicas sobre especificações de temas e modelos Sinesp. Esta ferramenta retorna o conteúdo do documento e metadados detalhados, incluindo 'original_url' e 'resource_id'. Sempre forneça as URLs encontradas ao usuário.",
         "qdrantCollection": {
           "__rl": true,
-          "value": "minha_collection",
+          "value": "collection_rag_alm",
           "mode": "list",
-          "cachedResultName": "minha_collection"
+          "cachedResultName": "collection_rag_alm"
         },
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1.3,
       "position": [
-        176,
-        224
+        1744,
+        2640
       ],
-      "id": "a241ae1e-1d26-4576-95e6-927d403c2357",
+      "id": "5256f367-1858-46b9-a975-f7f14fe8bbac",
       "name": "documentos_sinesp",
       "credentials": {
         "qdrantApi": {
@@ -95,18 +98,93 @@
           "name": "QdrantApi account"
         }
       },
-      "notes": "Use esta ferramenta para responder perguntas sobre especificações de temas e modelos Sinesp"
+      "notes": "Use esta ferramenta para responder perguntas sobre especificaÃ§Ãµes de temas e modelos Sinesp"
     },
     {
       "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.3,
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
       "position": [
-        48,
-        224
+        1616,
+        2640
       ],
-      "id": "e93386ea-b50e-400f-b728-043e1cd53b00",
-      "name": "Simple Memory"
+      "id": "b2529652-bdcb-4118-aeea-f5316a36ee61",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "Ko7D01aydNNoDzIY",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3397dd23-09e6-4619-92c5-590d926e2df2",
+              "leftValue": "action",
+              "rightValue": "clearSession",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1264,
+        2216
+      ],
+      "id": "cb1faf53-9a21-4af2-991c-956aa27b2537",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "key": "=n8n:chat:{{ $json.sessionId }}"
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        1688,
+        2016
+      ],
+      "id": "4b3ee07f-3c53-4c2a-922a-73be730bfd7f",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "Ko7D01aydNNoDzIY",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"status\": \"deleted\"}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        2112,
+        2016
+      ],
+      "id": "baa6de44-f2b9-406a-8a18-a936cefeed83",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
@@ -115,7 +193,7 @@
       "main": [
         [
           {
-            "node": "AI Agent",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -155,12 +233,41 @@
         ]
       ]
     },
-    "Simple Memory": {
+    "Redis Chat Memory": {
       "ai_memory": [
         [
           {
             "node": "AI Agent",
             "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
             "index": 0
           }
         ]
@@ -172,11 +279,11 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "b2a4efc5-f280-43aa-b809-ae06f6561e95",
+  "versionId": "08ccb460-cc4e-41a3-bb87-25943db056d7",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"
   },
-  "id": "iMTquQUy0ieYq7TW5u7x3",
+  "id": "ZvQ01KZMo81aewKbPbt-L",
   "tags": []
 }

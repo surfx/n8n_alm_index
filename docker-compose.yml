@@ -1,18 +1,11 @@
 version: "3.8"
 
 services:
-  fix-permissions:
-    image: node:20-bookworm-slim
-    entrypoint: ["bash", "-c", "chown -R 1000:1000 /home/node/.n8n"]
-    volumes:
-      - ./arquivos_docker/n8n_data:/home/node/.n8n
-    restart: "no"
-
   n8n:
     build: .
     image: docker.n8n.io/n8nio/n8n:latest
     container_name: n8n
-    restart: no
+    restart: "no"
     ports:
       - "5678:5678"
     environment:
@@ -43,7 +36,13 @@ services:
         condition: service_started
       ollama:
         condition: service_started
+      redis:
+        condition: service_started
       fix-permissions:
+        condition: service_completed_successfully
+      ollama-pull:
+        condition: service_completed_successfully
+      qdrant-setup:
         condition: service_completed_successfully
     deploy:
       resources:
@@ -52,11 +51,13 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    networks:
+      - n8n-network
       
   qdrant:
     image: qdrant/qdrant:latest
     container_name: qdrant
-    restart: no
+    restart: "no"
     ports:
       - "6333:6333"
     volumes:
@@ -68,11 +69,13 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    networks:
+      - n8n-network
 
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
-    restart: no
+    restart: "no"
     ports:
       - "11434:11434"
     volumes:
@@ -84,5 +87,92 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-      
+    networks:
+      - n8n-network
 
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    restart: "no"
+    command: ["redis-server", "--bind", "0.0.0.0", "--protected-mode", "no", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./arquivos_docker/redis_data:/data
+    depends_on:
+      fix-permissions:
+        condition: service_completed_successfully
+    networks:
+      - n8n-network
+
+  fix-permissions:
+    image: node:20-bookworm-slim
+    entrypoint: ["bash", "-c", "mkdir -p /home/node/.n8n /data && chown -R 1000:1000 /home/node/.n8n /data"]
+    volumes:
+      - ./arquivos_docker/n8n_data:/home/node/.n8n
+      - ./arquivos_docker/redis_data:/data
+    restart: "no"
+    networks:
+      - n8n-network
+
+  ollama-pull:
+    image: ollama/ollama:latest
+    container_name: ollama-pull
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Ollama server..."
+        while ! ollama list > /dev/null 2>&1; do
+          sleep 2
+        done
+        ollama pull nomic-embed-text
+        ollama pull llama3.1
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    depends_on:
+      ollama:
+        condition: service_started
+    networks:
+      - n8n-network
+
+  qdrant-setup:
+    image: curlimages/curl:latest
+    container_name: qdrant-setup
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for Qdrant..."
+        # Wait for Qdrant to be ready (status 200 on /readyz)
+        until curl -s -f "http://qdrant:6333/readyz"; do
+          sleep 2
+        done
+        echo "Qdrant is ready."
+
+        # Check if collection exists
+        http_code=$$(curl -s -o /dev/null -w "%{http_code}" "http://qdrant:6333/collections/collection_rag_alm")
+
+        if [ "$$http_code" = "200" ]; then
+          echo "Collection 'collection_rag_alm' already exists. Skipping creation."
+        else
+          echo "Collection not found. Creating 'collection_rag_alm'..."
+          curl -X PUT "http://qdrant:6333/collections/collection_rag_alm" \
+               -H "Content-Type: application/json" \
+               -d '{
+                     "vectors": {
+                       "size": 768, 
+                       "distance": "Cosine"
+                     }
+                   }'
+          echo "Collection created."
+        fi
+    depends_on:
+      qdrant:
+        condition: service_started
+    networks:
+      - n8n-network
+
+networks:
+  n8n-network:
+    driver: bridge

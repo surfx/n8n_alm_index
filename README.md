@@ -48,7 +48,7 @@ Acessar [community-nodes](http://localhost:5678/settings/community-nodes), insta
 
 ## 1 Download Alm Requisitos
 
-Responmsável por fazer o download de todos os requisitos de uma área de projeto do ibm alm e salvar em uma pasta
+Responsável por fazer o download de todos os requisitos de uma área de projeto do ibm alm e salvar em uma pasta
 
 ![](arquivos_readme/001.png)
 
@@ -92,11 +92,11 @@ Dentro do docker use `qdrant`, no windows use `localhost`
 - [http://localhost:6333/collections](http://localhost:6333/collections)
 - [http://localhost:6333/dashboard](http://localhost:6333/dashboard)
 
-Criar índice no qdrant
+Criar índice no qdrant (dentro do docker use `qdrant`, no windows use `localhost`)
 
 ```bash
-curl -X DELETE "http://qdrant:6333/collections/minha_collection"
-curl -X PUT "http://qdrant:6333/collections/minha_collection" \
+curl -X DELETE "http://qdrant:6333/collections/collection_rag_alm"
+curl -X PUT "http://qdrant:6333/collections/collection_rag_alm" \
      -H "Content-Type: application/json" \
      -d '{
            "vectors": {
@@ -105,6 +105,8 @@ curl -X PUT "http://qdrant:6333/collections/minha_collection" \
            }
          }'
 ```
+
+![qdrant](arquivos_readme/qdrant.png)
 
 # Ollama
 

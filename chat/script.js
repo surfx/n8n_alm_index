@@ -1,5 +1,6 @@
 // Configuração
-const WEBHOOK_URL = "http://localhost:5678/webhook/e694bea8-397d-4953-835d-734a7893defc/chat";
+const chat_id = 'e694bea8-397d-4953-835d-734a7893defc';
+let WEBHOOK_URL = `http://localhost:5678/webhook/${chat_id}/chat`;
 
 // Elementos do DOM
 const chatHistory = document.getElementById('chat-history');
@@ -14,8 +15,6 @@ let currentAbortController = null; // Para cancelar requisições
 const BOT_ICON_SVG = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>`;
 const USER_ICON_SVG = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>`;
 
-console.log('Script carregado. Elementos encontrados:', { chatHistory, chatInput, sendBtn, clearBtn, stopBtn });
-
 // Função auxiliar para gerar UUID
 function generateUUID() {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -27,11 +26,8 @@ function generateUUID() {
     });
 }
 
-// Inicializar Mensagem de Boas-vindas se estiver vazio (após reload manual que não limpa HTML estático)
-// Na verdade, o HTML estático já tem uma msg, mas sem ícone. Vamos limpar e refazer ou ajustar.
-// Como o HTML é estático, melhor limpar no JS e recriar com ícone se for a primeira vez.
+// Inicializar interface (substitui msg estática por dinâmica com ícone)
 if (chatHistory.children.length > 0 && !chatHistory.innerHTML.includes('message-icon')) {
-    // Substitui a msg estática inicial pela dinâmica com ícone
     chatHistory.innerHTML = '';
     addMessageToUI('Olá! Como posso ajudar você hoje?', 'bot');
 }
@@ -42,9 +38,8 @@ if (!sessionId) {
     sessionId = generateUUID();
     localStorage.setItem('n8n_chat_session_id', sessionId);
 }
-console.log('Session ID:', sessionId);
 
-// Ajustar altura do textarea automaticamente
+// Ajustar altura do textarea
 chatInput.addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
@@ -61,22 +56,44 @@ chatInput.addEventListener('keydown', (e) => {
 
 sendBtn.addEventListener('click', sendMessage);
 
-// Ação do Botão Parar
 stopBtn.addEventListener('click', () => {
     if (currentAbortController) {
         currentAbortController.abort();
         currentAbortController = null;
-        console.log('Geração interrompida pelo usuário.');
-        finishGeneration(true); // true = foi abortado
+        finishGeneration(true);
     }
 });
 
-clearBtn.addEventListener('click', () => {
-    if(confirm('Deseja iniciar uma nova conversa? O histórico será limpo.')) {
+// Lógica de Limpeza Sincronizada com n8n
+clearBtn.addEventListener('click', async () => {
+    if(confirm('Deseja iniciar uma nova conversa? O histórico será limpo no servidor.')) {
+        
+        const oldBtnText = clearBtn.innerText;
+        clearBtn.disabled = true;
+        clearBtn.innerText = 'Limpando...';
+
+        try {
+            // Envia o comando de limpeza para o n8n usando o ID atual
+            await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    sessionId: sessionId, 
+                    action: "clearSession" 
+                })
+            });
+        } catch (error) {
+            console.error('Erro ao solicitar limpeza ao n8n:', error);
+        }
+
+        // Reseta tudo localmente
         sessionId = generateUUID();
         localStorage.setItem('n8n_chat_session_id', sessionId);
         chatHistory.innerHTML = '';
         addMessageToUI('Conversa reiniciada. Como posso ajudar?', 'bot');
+        
+        clearBtn.disabled = false;
+        clearBtn.innerText = oldBtnText;
     }
 });
 
@@ -84,46 +101,36 @@ async function sendMessage() {
     const text = chatInput.value.trim();
     if (!text) return;
 
-    // Reset UI state
     addMessageToUI(text, 'user');
     chatInput.value = '';
     chatInput.style.height = 'auto';
     sendBtn.disabled = true;
-    
-    // Mostra botão de parar
     stopBtn.classList.add('visible');
 
-    // Cria bolha com indicador de loading (Imagem SVG)
-    const loadingHtml = `<img src="loader.svg" alt="Digitando..." class="loading-gif">`;
     const botMessageContent = addMessageToUI(null, 'bot', true);
-    botMessageContent.innerHTML = loadingHtml; // Inicia com loading
+    botMessageContent.innerHTML = `<img src="loader.svg" alt="Digitando..." class="loading-gif">`;
     
-    let isFirstContent = true;
     currentAbortController = new AbortController();
     const signal = currentAbortController.signal;
 
+    let fullContent = "";
+
     try {
-        console.log('Iniciando fetch para:', WEBHOOK_URL);
-        
         const response = await fetch(WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sessionId: sessionId,
-                action: "sendMessage",
-                chatInput: text
-            }),
+            body: JSON.stringify({ sessionId, action: "sendMessage", chatInput: text }),
             signal: signal
         });
 
         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
 
-        console.log('Conexão estabelecida, aguardando stream...');
-
         const reader = response.body.getReader();
         const decoder = new TextDecoder("utf-8");
         let buffer = "";
-        let isFirstContent = true; // Controla quando remover o loading visualmente
+        
+        const loader = botMessageContent.querySelector('.loading-gif');
+        if (loader) loader.remove();
 
         while (true) {
             const { done, value } = await reader.read();
@@ -132,93 +139,64 @@ async function sendMessage() {
             const chunk = decoder.decode(value, { stream: true });
             buffer += chunk;
 
-            let lines = buffer.split('\n');
+            const lines = buffer.split('\n');
             buffer = lines.pop(); 
 
             for (const line of lines) {
                 if (line.trim()) {
-                    // Se processJSONLine retornar true, significa que adicionou texto
-                    if (processJSONLine(line, botMessageContent, isFirstContent)) {
-                        isFirstContent = false; // Já limpamos o loading, não precisa mais
+                    try {
+                        const data = JSON.parse(line);
+                        if (data.type === 'item' && data.content) {
+                            fullContent += data.content;
+                            botMessageContent.innerText = fullContent; 
+                            scrollToBottom();
+                        }
+                    } catch (e) {
+                        // Ignora chunks incompletos
                     }
                 }
             }
         }
         
-        if (buffer.trim()) {
-             processJSONLine(buffer, botMessageContent, isFirstContent);
-        }
-
-        finishGeneration(false);
+        finishGeneration(false, botMessageContent, fullContent);
 
     } catch (error) {
         if (error.name === 'AbortError') {
-            // Tratado no click do botão
+             finishGeneration(true, botMessageContent, fullContent);
         } else {
             console.error('Erro no envio:', error);
-            // Se der erro e ainda estiver com loading, limpa
-            if (botMessageContent.querySelector('.loading-gif')) {
-                botMessageContent.innerHTML = "";
-            }
-            
-            botMessageContent.innerText += `\n[Erro: ${error.message}]`;
-            
-            if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-                 botMessageContent.innerText += "\n(Possível erro de CORS ou servidor offline)";
-            }
-            finishGeneration(false);
+            botMessageContent.innerText = fullContent + `\n\n[Erro: ${error.message}]`;
+            finishGeneration(false, null, null);
         }
     }
 }
 
-function finishGeneration(aborted) {
+function finishGeneration(aborted, element, markdownContent) {
     sendBtn.disabled = false;
     stopBtn.classList.remove('visible');
     currentAbortController = null;
+
+    if (element && markdownContent) {
+        element.innerHTML = marked.parse(markdownContent);
+    }
     
-    if (aborted) {
-        const lastMsg = chatHistory.querySelector('.bot-message:last-child .message-content');
-        if(lastMsg) {
-             const stopIndicator = document.createElement('span');
-             stopIndicator.style.color = '#999';
-             stopIndicator.style.fontSize = '0.8em';
-             stopIndicator.innerText = ' (interrompido)';
-             lastMsg.appendChild(stopIndicator);
-        }
+    if (aborted && element) {
+         const stopIndicator = document.createElement('span');
+         stopIndicator.className = 'stop-indicator';
+         stopIndicator.innerText = ' (interrompido)';
+         element.appendChild(stopIndicator);
     }
     scrollToBottom();
-}
-
-function processJSONLine(jsonStr, element, shouldClearLoading) {
-    try {
-        const data = JSON.parse(jsonStr);
-        if (data.type === 'item' && data.content) {
-            // Se for o primeiro conteúdo e tivermos que limpar o loading:
-            if (shouldClearLoading) {
-                // Remove apenas a imagem de loading, mantém qualquer texto anterior (se houver, embora improvável aqui)
-                const loader = element.querySelector('.loading-gif');
-                if (loader) loader.remove();
-            }
-            element.innerText += data.content;
-            scrollToBottom();
-            return true; // Indicamos que adicionamos conteúdo
-        }
-    } catch (e) {
-        console.warn("Erro ao fazer parse de trecho JSON:", e);
-    }
-    return false;
 }
 
 function addMessageToUI(text, sender, returnElement = false) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', `${sender}-message`);
     
-    // Criar Ícone
     const iconDiv = document.createElement('div');
     iconDiv.classList.add('message-icon');
     iconDiv.innerHTML = sender === 'bot' ? BOT_ICON_SVG : USER_ICON_SVG;
 
-    // Criar Conteúdo
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
     
@@ -226,7 +204,6 @@ function addMessageToUI(text, sender, returnElement = false) {
         contentDiv.innerText = text;
     }
     
-    // Montar (O CSS row/row-reverse cuida da ordem visual)
     msgDiv.appendChild(iconDiv);
     msgDiv.appendChild(contentDiv);
     
