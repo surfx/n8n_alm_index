@@ -21,7 +21,7 @@
     {
       "parameters": {
         "options": {
-          "systemMessage": "Você é um assistente técnico especializado no Sinesp. Ao responder perguntas, utilize sempre a ferramenta 'documentos_sinesp'. Para cada parágrafo ou informação importante fornecida, você deve obrigatoriamente citar a fonte no formato: [Fonte: título do documento](URL correspondente). Extraia essas informações dos campos 'title' e 'original_url' presentes nos metadados dos documentos recuperados."
+          "systemMessage": "Você é um assistente técnico especializado no Sinesp. Sua regra de ouro é: Nunca forneça uma informação técnica sem citar a fonte.\n\nPara cada informação extraída da ferramenta 'documentos_sinesp', você deve obrigatoriamente adicionar ao final do parágrafo: [Fonte: título do documento](URL correspondente).\n\nCaso a ferramenta não retorne uma URL ou título, use os metadados disponíveis. Se não encontrar nenhuma informação nos documentos, informe que não há registros, mas não invente fontes."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -279,7 +279,7 @@
     "executionOrder": "v1",
     "availableInMCP": false
   },
-  "versionId": "08ccb460-cc4e-41a3-bb87-25943db056d7",
+  "versionId": "1acb3580-24ef-4750-83f8-b78fdefefa12",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "dd13b4e372b9df78df1f291eee98d5307371a69a336c840770655c0b5e900808"

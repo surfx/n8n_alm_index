@@ -1,6 +1,6 @@
 Set-Location "D:\projetos\ia\n8n"
 
-$ContainerName = "ollama"
+$ContainerName = "redis"
 
 # Verifica o status
 $containerStatus = docker ps -a --filter "name=^$ContainerName$" --format "{{.Status}}"
@@ -18,6 +18,6 @@ if ($containerStatus -notlike "Up*") {
 }
 
 Write-Host "🚀 Verificando GPU na RTX 4090..." -ForegroundColor Green
-docker exec -w /root/.ollama -it $ContainerName /bin/bash
+docker exec -w /data -it $ContainerName /bin/sh
 
 Set-Location "D:\projetos\ia\n8n\scripts"
