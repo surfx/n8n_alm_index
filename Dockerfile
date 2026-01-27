@@ -10,6 +10,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 #RUN sed -i 's/^deb http/deb [signed-by=\/usr\/share\/keyrings\/debian-archive-keyring.gpg] http/' /etc/apt/sources.list || true
 
 RUN apt-get update && apt-get install -y \
+    bash-completion \
     sudo \
     wget \
     python3 \
@@ -53,6 +54,9 @@ RUN apt-get update && apt-get install -y \
 	sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
+ENV TERM xterm-256color
+RUN usermod -s /bin/bash node
+
 # ===============================
 # Usuário node + sudo
 # ===============================
@@ -69,8 +73,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 # n8n
 # ===============================
 RUN npm install -g n8n
-
-
 
 # ===============================
 # Runtime
