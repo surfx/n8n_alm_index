@@ -1,0 +1,2 @@
+alterar os modelos do ollama para a pasta:
+C:\Users\Emerson\.ollama
